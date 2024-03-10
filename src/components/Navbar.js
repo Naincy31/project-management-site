@@ -7,7 +7,7 @@ import Temple from '../assets/temple.svg'
 import { useAuthContext } from '../hooks/useAuthContext'
 
 const Navbar = () => {
-    const { logout, error, isPending } = useLogout()
+    const { logout, isPending } = useLogout()
     const { user } = useAuthContext()
 
   return (
