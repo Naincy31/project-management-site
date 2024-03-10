@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import useSignup from '../../hooks/useSignup'
 
 //styles
 import './Signup.css'
@@ -7,36 +8,38 @@ const Signup = () => {
     const [displayName, setDisplayName] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
-    const [thumbnail, setThumbnail] = useState(null)
-    const [thumbnailError, setThumbnailError] = useState(null)
+    const [avatar, setAvatar] = useState(null)
+    const [avatarError, setAvatarError] = useState(null)
+    const { signup, error, isPending } = useSignup()
 
     const handleFileChange = (e) => {
-        setThumbnail(null)
+        setAvatar(null)
         let selected = e.target.files[0]
         console.log(selected);
 
         if (!selected) {
-            setThumbnailError('Please select a file')
+            setAvatarError('Please select a file')
             return
         }
         if (!selected.type.includes('image')) {
-            setThumbnailError('Selected file must be an image')
+            setAvatarError('Selected file must be an image')
             return
         }
         if (selected.size > 100000) {
-            setThumbnailError('Image file size must be less then 100KB')
+            setAvatarError('Image file size must be less then 100KB')
             return
         }
 
-        setThumbnailError(null)
-        setThumbnail(selected)
-        console.log('Thumbnail updated');
+        setAvatarError(null)
+        setAvatar(selected)
+        console.log('Avatar updated');
 
     }
     
     const handleSubmit = (e) => {
         e.preventDefault()
-        console.log(displayName, email,password, thumbnail);
+        console.log(displayName, email,password, avatar);
+        signup(email, password, displayName, avatar);
     }
 
   return (
@@ -70,15 +73,16 @@ const Signup = () => {
             />
         </label>
         <label>
-            <span>Profile Thumbnail:</span>
+            <span>Profile Avatar:</span>
             <input 
                 type='file'
                 onChange={handleFileChange}
                 required
             />
-            {thumbnailError && <div className='error'>{thumbnailError}</div>}
+            {avatarError && <div className='error'>{avatarError}</div>}
         </label>
-        <button className='btn'>Sign up</button>
+        {isPending ? <button className='btn' disabled>Loading...</button> : <button className='btn'>Sign up</button>}
+        {error && <div className='error'>{error}</div>}
     </form>
   )
 }

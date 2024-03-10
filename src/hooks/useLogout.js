@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { useAuthContext } from "./useAuthContext";
-import { auth } from "../firebase/config";
+import { auth, db } from "../firebase/config";
 import { signOut } from "firebase/auth";
+import { doc, updateDoc } from "firebase/firestore";
 
 const useLogout = () => {
     const [isCancelled, setIsCancelled] = useState(false);
     const [error, setError] = useState(null);
     const [isPending, setIsPending] = useState(false);
-    const { dispatch } = useAuthContext();
+    const { dispatch, user } = useAuthContext();
 
     const logout = async () => {
         setError(null);
@@ -15,6 +16,14 @@ const useLogout = () => {
 
         //sign the user out
         try {
+            //update online status
+            const { uid } = user
+            const userRef = doc(db, 'users', uid)
+
+            await updateDoc(userRef, {
+                online: false
+            })
+
             await signOut(auth)
             console.log('Signout Successful');
 
@@ -37,6 +46,7 @@ const useLogout = () => {
     }
 
     useEffect(() => {
+        setIsCancelled(false)
         return () => setIsCancelled(true);
     }, [])
 

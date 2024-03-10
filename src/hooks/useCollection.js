@@ -1,18 +1,19 @@
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect } from "react"
 import { db } from "../firebase/config"
-import { collection, onSnapshot, where, query, orderBy } from "firebase/firestore"
+import { collection, onSnapshot } from "firebase/firestore"
 
-export const useCollection = (collectionName, queryDoc, orderDoc) => {
+export const useCollection = (collectionName) => {
     const [documents, setDocuments] = useState(null)
     const [error, setError] = useState(null)
 
     //If we don't use a ref -> infinite loop in useEffect
     //queryDoc is an array and is diff on every function call and is being passed as a reference
-    const _query = useRef(queryDoc).current
-    const _order = useRef(orderDoc).current
+    // const _query = useRef(queryDoc).current
+    // const _order = useRef(orderDoc).current
 
     useEffect(() => {
-        let ref = query(collection(db, collectionName), where(..._query), orderBy(..._order))
+        //let ref = query(collection(db, collectionName), where(..._query), orderBy(..._order))
+        const ref = collection(db, collectionName)
 
         const getDocuments = async () => {
 
@@ -36,7 +37,7 @@ export const useCollection = (collectionName, queryDoc, orderDoc) => {
 
         getDocuments();
 
-    }, [collectionName, _query, _order])
+    }, [collectionName])
 
     return { documents, error }
 }
