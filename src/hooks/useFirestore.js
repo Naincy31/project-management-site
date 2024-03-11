@@ -1,8 +1,8 @@
-import { collection, addDoc, Timestamp, deleteDoc, doc } from "firebase/firestore";
+import { collection, addDoc, Timestamp, deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import { useReducer } from "react";
 
-let initialState = {
+const initialState = {
     document: null,
     isPending: false,
     error: null,
@@ -12,13 +12,15 @@ let initialState = {
 const firestoreReducer = (state, action) => {
     switch (action.type){
         case 'IS_PENDING':
-            return { isPending: true, document: null, success: false, error: null }
+            return { ...state, document: null, isPending: true, error: null, success: false }
         case 'ADDED_DOCUMENT':
-            return { document: action.payload, isPending: false, success: true, error: null }
+            return { ...state, document: action.payload, isPending: false, success: true, error: null }
         case 'DELETED_DOCUMENT':
-            return { document: null, isPending: false, error: null, success: true}
+            return { ...state, document: null, isPending: false, error: null, success: true}
+        case 'UPDATE_DOC':
+            return { ...state, document: action.payload, isPending: false, success: true, error: null }
         case 'ERROR':
-            return { error: action.payload, isPending: false, success: false, document: null }
+            return { ...state, error: action.payload, isPending: false, success: false, document: null }
         default:
             return state
     }
@@ -55,5 +57,21 @@ export const useFirestore = (collectionName) => {
         }
     }
 
-    return {addDocument, deleteDocument, response};
+    //update document
+    const updateDocument = async (id, updates) => {
+        dispatch({ type: 'IS_PENDING' });
+        console.log(response);
+
+        const docRef = doc(ref, id)
+        try {
+            const updatedDocument = await updateDoc(docRef, updates)
+            dispatch({ type: 'UPDATE_DOC', payload: updatedDocument})
+            return updatedDocument
+        } catch (err) {
+            dispatch({ type: 'ERROR', payload: err.message})
+            return null
+        }
+    }
+
+    return {addDocument, deleteDocument, updateDocument, response};
 }
