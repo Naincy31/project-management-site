@@ -37,6 +37,13 @@
     margin-top: 20px;
   }
 
+  .project-summary + .completed{
+    background-color: #99e699;
+    color: #fff;
+    border: none;
+    cursor: auto;
+  }
+
   /* project comments */
 .project-comments label {
     margin-bottom: 0px;
