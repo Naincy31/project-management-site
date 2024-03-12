@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuthContext } from "../../hooks/useAuthContext"
 import { Timestamp } from "firebase/firestore"
 import { useFirestore } from "../../hooks/useFirestore"
 import Avatar from "../../components/Avatar"
+import { formatDistanceToNow } from "date-fns"
 
 const ProjectComments = ({ project }) => {
     const [newComment, setNewComment] = useState('')
@@ -24,11 +25,13 @@ const ProjectComments = ({ project }) => {
         await updateDocument(project.id, {
             comments: [...project.comments, commentsToAdd]
         })
+    }
 
+    useEffect(() => {
         if(response.success){
             setNewComment('')
         }
-    }
+    }, [response])
 
   return (
     <div className="project-comments">
@@ -42,7 +45,7 @@ const ProjectComments = ({ project }) => {
                         <p>{comment.displayName}</p>
                     </div>
                     <div className="comment-date">
-                        <p>date</p>
+                        <p>{formatDistanceToNow(comment.createdAt.toDate(), { addSuffix: true})}</p>
                     </div>
                     <div className="comment-content">
                         <p>{comment.content}</p>

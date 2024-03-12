@@ -39,7 +39,7 @@ const useSignup = () => {
         const imageURL = await getDownloadURL(storageRef, uploadPath); 
         console.log(imageURL);
 
-        //Add display name to current user
+        //Add displayName and imageURL to current user
         await updateProfile(auth.currentUser, { displayName, photoURL: imageURL })
         console.log(auth.currentUser);
 

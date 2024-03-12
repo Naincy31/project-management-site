@@ -73,6 +73,7 @@ const Create = () => {
       dueDate: Timestamp.fromDate(new Date(dueDate)),
       comments: [],
       createdBy,
+      completed: false,
       assignedUsersList
     }
 
